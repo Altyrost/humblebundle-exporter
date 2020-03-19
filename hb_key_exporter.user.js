@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         HumbleBundle : export keys
-// @include      https://www.humblebundle.com/home/keys*
+// @match        https://www.humblebundle.com/home/*
 // @require      http://code.jquery.com/jquery-3.4.1.min.js
 // @version      0.1
 // @description  
@@ -45,7 +45,6 @@ function export_keys() {
 
     for (i = 0; i < loop; i++){
         $$('tbody tr').each(function(){
-
             let name = $$(this).children('td.game-name').children('h4').attr('title');
             let platform = $$(this).children('td.platform').children('i').attr('title');
 
@@ -203,12 +202,27 @@ function init_ui()
     }); 
 }
 
+function try_delayed_init() {
+    window.setTimeout(() => {        
+        let already_init = $$('body').find('#KeysWindow')[0] ? true : false;
+        if (location.href.endsWith("keys") && !already_init) {
+            init_ui(); 
+        }
+    }, 150);
+}
+
 /*
  * Main
  */
 (() => {
     $(window).load(() => { 
-        init_ui(); 
+        if (location.href.endsWith("keys")) {
+            init_ui(); 
+        } else {
+            $("body").find(".tabbar-tab").each(function() {
+                $(this).click(try_delayed_init);
+            });
+        }
         console.log("-- Script loaded");
     });
 })();
